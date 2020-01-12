@@ -31,7 +31,7 @@ public class MetroExceptionHandler {
 	@ExceptionHandler(value = MetroRepositoryException.class)
 	public ResponseEntity<ErrorResponse> metroRepositoryException(MetroRepositoryException exception) {
 		ErrorResponse errorResponse = new ErrorResponse();
-		errorResponse.setMessage("Error occured while fetching/inserting data into the database");
+		errorResponse.setMessage("Error occurred while fetching/inserting data into the database");
 		return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 

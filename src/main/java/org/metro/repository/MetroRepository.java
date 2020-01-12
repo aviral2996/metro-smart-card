@@ -10,17 +10,22 @@ import org.metro.mapper.JourneyRowMapper;
 import org.metro.mapper.MetroRowMapper;
 import org.metro.models.Journey;
 import org.metro.models.MetroCard;
+import org.metro.service.MetroService;
 import org.metro.utility.Station;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class MetroCardRepository {
+public class MetroRepository {
 
 	@Autowired
 	private NamedParameterJdbcTemplate jdbcTemplate;
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(MetroService.class);
 
 	public MetroCard findById(Long id) {
 		MetroCard metro = null;
@@ -31,8 +36,10 @@ public class MetroCardRepository {
 			List<MetroCard> metroCard = jdbcTemplate.query(sql, parameters, new MetroRowMapper());
 			metro = (metroCard != null && !metroCard.isEmpty()) ? metroCard.get(0) : null;
 		} catch (RuntimeException e) {
+			LOGGER.error("Error occurred while fetching metro card details for metro card : " + id);
 			throw new MetroRepositoryException();
 		}
+		LOGGER.info("Successfully fetched metro card details for metro card : " + id);
 		return metro;
 	}
 
@@ -45,8 +52,10 @@ public class MetroCardRepository {
 			List<Journey> journeyList = jdbcTemplate.query(sql, parameters, new JourneyRowMapper());
 			journey = (journeyList != null && !journeyList.isEmpty()) ? journeyList.get(0) : null;
 		} catch (RuntimeException e) {
+			LOGGER.error("Error occurred while fetching last swipe details for metro card : " + id);
 			throw new MetroRepositoryException();
 		}
+		LOGGER.info("Successfully fetched last swipe details for metro card : " + id);
 		return journey;
 
 	}
@@ -59,8 +68,10 @@ public class MetroCardRepository {
 			parameters.addValue("metroCardId", id);
 			journeyList = jdbcTemplate.query(sql, parameters, new JourneyRowMapper());
 		} catch (RuntimeException e) {
+			LOGGER.error("Error occurred while fetching completed journey for metro card : " + id);
 			throw new MetroRepositoryException();
 		}
+		LOGGER.info("Successfully fetched completed journey for metro card : " + id);
 		return journeyList;
 	}
 
@@ -72,8 +83,10 @@ public class MetroCardRepository {
 			parameters.addValue("station", station.toString());
 			footFalls = jdbcTemplate.queryForObject(sql, parameters, Integer.class);
 		} catch (RuntimeException e) {
+			LOGGER.error("Error occurred while fetching footfalls for metro station : " + station.toString());
 			throw new MetroRepositoryException();
 		}
+		LOGGER.info("Successfully fetched footfalls for metro station : " + station.toString());
 		return footFalls;
 
 	}
@@ -91,7 +104,9 @@ public class MetroCardRepository {
 			parameters.put("fare", journey.getFare());
 			parameters.put("metroCardId", journey.getMetroCardId());
 			jdbcTemplate.update(sql, parameters);
+			LOGGER.info("Successfully inserted new journey for metro card : " + journey.getMetroCardId());
 		} catch (RuntimeException e) {
+			LOGGER.error("Error occurred while inserting new journey for metro card : " + journey.getMetroCardId());
 			throw new MetroRepositoryException();
 		}
 	}
@@ -107,7 +122,9 @@ public class MetroCardRepository {
 			parameters.put("fare", journey.getFare());
 			parameters.put("id", journey.getId());
 			jdbcTemplate.update(sql, parameters);
+			LOGGER.info("Successfully updated journey for metro card : " + journey.getMetroCardId());
 		} catch (RuntimeException e) {
+			LOGGER.error("Error occurred while updating journey for metro card : " + journey.getMetroCardId());
 			throw new MetroRepositoryException();
 		}
 	}
@@ -119,7 +136,9 @@ public class MetroCardRepository {
 			parameters.put("balance", metroCard.getBalance());
 			parameters.put("id", metroCard.getId());
 			jdbcTemplate.update(sql, parameters);
+			LOGGER.info("Successfully updated balance for metro card : " + metroCard.getId());
 		} catch (RuntimeException e) {
+			LOGGER.error("Error occurred while updating balance for metro card : " + metroCard.getId());
 			throw new MetroRepositoryException();
 		}
 	}

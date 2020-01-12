@@ -12,18 +12,22 @@ import org.metro.exception.SwipeInException;
 import org.metro.exception.SwipeOutException;
 import org.metro.models.Journey;
 import org.metro.models.MetroCard;
-import org.metro.repository.MetroCardRepository;
+import org.metro.repository.MetroRepository;
 import org.metro.utility.CreateCardReport;
 import org.metro.utility.Station;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class MetroCardService {
+public class MetroService {
 
 	@Autowired
-	private MetroCardRepository metroCardRepository;
+	private MetroRepository metroCardRepository;
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(MetroService.class);
 
 	@Transactional
 	public void cardSwipeIn(Long metroCardId, Station source) {
@@ -31,9 +35,11 @@ public class MetroCardService {
 		Journey lastJourney = metroCardRepository.lastJourney(metroCardId);
 		if (!Objects.isNull(lastJourney)) {
 			if (lastJourney.getCompleted() == 0) {
+				LOGGER.error("First swipe out and complete your last journey.");
 				throw new SwipeInException();
 			}
 			if (metroCard.getBalance() < 50) {
+				LOGGER.error("Minimum balance should be 50.");
 				throw new InsufficientBalanceException();
 			}
 		}
@@ -46,6 +52,7 @@ public class MetroCardService {
 		MetroCard metroCard = validateMetroCard(metroCardId);
 		Journey journey = metroCardRepository.lastJourney(metroCardId);
 		if (Objects.isNull(journey) || journey.getCompleted() == 1) {
+			LOGGER.error("First swipe in.");
 			throw new SwipeOutException();
 		}
 		LocalDateTime date = LocalDateTime.now();
@@ -61,12 +68,13 @@ public class MetroCardService {
 
 		metroCardRepository.updateJourney(journey);
 		metroCardRepository.updateMetroCardBalance(metroCard);
+		LOGGER.info("Jouney completed and metro card balance updated.");
 	}
 
 	public void cardReportSummary(Long metroCardId) throws IOException {
 		MetroCard metroCard = validateMetroCard(metroCardId);
 		List<Journey> journeyList = metroCardRepository.completedJourneyPerCard(metroCardId);
-		 CreateCardReport.createMetroCardReport(metroCard, journeyList);
+		CreateCardReport.createMetroCardReport(metroCard, journeyList);
 	}
 
 	public Integer totalFootFall(Station station) {
@@ -96,6 +104,7 @@ public class MetroCardService {
 	private MetroCard validateMetroCard(Long id) {
 		MetroCard metroCard = metroCardRepository.findById(id);
 		if (metroCard == null) {
+			LOGGER.error("Invalid Metro Card.");
 			throw new InvalidCardException();
 		}
 		return metroCard;
