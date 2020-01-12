@@ -14,7 +14,7 @@ spring.datasource.password=password
 spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
 ```
 
-Initial database data is loaded before the application starts with schema.sql and data.sql
+Initial database data is loaded on application startup with schema.sql and data.sql
 
 schema.sql
 

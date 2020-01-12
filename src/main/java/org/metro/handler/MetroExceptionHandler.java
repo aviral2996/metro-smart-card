@@ -17,7 +17,7 @@ public class MetroExceptionHandler {
 	@ExceptionHandler(value = InsufficientBalanceException.class)
 	public ResponseEntity<ErrorResponse> insufficientBalanceException(InsufficientBalanceException exception) {
 		ErrorResponse errorResponse = new ErrorResponse();
-		errorResponse.setMessage("Minimum balance should be 50.");
+		errorResponse.setMessage("Insufficient Balance. Please recharge");
 		return new ResponseEntity<>(errorResponse, HttpStatus.NOT_ACCEPTABLE);
 	}
 

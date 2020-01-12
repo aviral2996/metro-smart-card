@@ -60,7 +60,10 @@ public class MetroService {
 
 		Double fare = getFare(currentDay, journey.getSource(), destination);
 		metroCard.setBalance(metroCard.getBalance() - fare);
-
+		if (metroCard.getBalance()<0) {
+			LOGGER.error("Insufficient Balance");
+			throw new InsufficientBalanceException();
+		}
 		journey.setDestination(destination);
 		journey.setCompleted(1);
 		journey.setFare(fare);
