@@ -1,10 +1,6 @@
 package org.metro.repository;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,12 +9,10 @@ import org.metro.mapper.JourneyRowMapper;
 import org.metro.mapper.MetroRowMapper;
 import org.metro.models.Journey;
 import org.metro.models.MetroCard;
-import org.metro.utility.Station;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
